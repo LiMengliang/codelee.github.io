@@ -4,11 +4,8 @@ title: About
 permalink: /about/
 ---
 
-Some information about you!
+Software developer from Bytedance
 
-### More Information
-
-A place to include any other types of information that you'd like to include about yourself.
 
 ### Contact me
 
