@@ -1,6 +1,8 @@
-# golang方法Receiver的自动类型转换
+| layout | title                            |
+| ------ | -------------------------------- |
+| post   | golang方法Receiver的自动类型转换 |
 
-
+ 
 
 ## 背景
 
