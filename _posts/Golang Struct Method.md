@@ -89,5 +89,87 @@ fmt.Printf("After calling set, the message of s: %v\n", msg)
 
 ## struct赋值给interface时的receiver转换
 
+之前所有的case，golang都能够做指针和值的自动转换，看起来我们不用关心指针和值都能够调用哪些方法，但放到struct赋值给interface（多态常见的情形）情况有不同，看下面两组情况：
+
+- 情况1
+
+````go
+type MyInterface interface {
+  Method1()
+  Method2()
+}
+
+type MyInterfaceImp1 struct {
+}
+
+func (m MyInterfaceImp1) Method1() {
+  fmt.Printf("Address %p", &m) //地址1
+  ...
+}
+
+func (m MyInterfaceImp1) Method2() {
+  fmt.Printf("Address %p", &m)
+  ...
+}
+````
+
+以上情况，MyInterfaceImp1的两个方法的receiver都是值类型，那么一下两个赋值都可以：
+
+```go
+var myInterface MyInterface // 地址2
+m1 := MyInterfaceImp1{} // 地址3
+m2 := &MyInterfaceImp1{} // 地址4
+
+myInterface = m1 // 赋值成功
+myInterface = m2 // 赋值成功
+```
+
+将m1赋值给myInterface: m1的值拷贝给myInterface，然后调用函数的时候也是直接将myInterface的值拷贝给方法的receiver；对比一下各个地址：地址1和地址2不同，地址2和地址3不同。
+
+将m2赋值给myInterface：m2的地址拷贝给myInterface，然后调用方法时，golang自动将myInterface的地址对应的值取出，值拷贝给方法的receiver。对比一下各个地址：地址1和地址2不同，地址2和地址4相同。
+
+- 情况2
+
+```go
+type MyInterface interface {
+  Method1()
+  Method2()
+}
+
+type MyInterfaceImp1 struct {
+}
+
+func (m MyInterfaceImp1) Method1() {
+  fmt.Printf("Address %p", &m) 
+  ...
+}
+
+func (m *MyInterfaceImp1) Method2() {
+  fmt.Printf("Address %p", &m)//地址1
+  ...
+}
+```
+
+以上情况，MyInterfaceImp1的一个方法的receiver是指针类型，那么将MyInterfaceImp1的实例赋值给MyInterface变量会编译错误：
+
+```go
+var myInterface MyInterface // 地址2
+m1 := MyInterfaceImp1{} // 地址3
+m2 := &MyInterfaceImp1{} // 地址4
+
+myInterface = m1 // 赋值失败
+myInterface = m2 // 赋值成功
+```
+
+失败的原因是：m1赋值给myInterface之后，myInterface拿到的是m1的值拷贝，当调用Method2的时候，按照golang自动转换原则，会将myInterface的地址拷贝给Method2的receiver，但这个地址和原来m1的地址是不同的。按照Method2的语意是操作m1的地址，但实际上可以看出并没有操作m1的地址，而是操作了myInterface地址。golang为了避免这种奇怪的现象，于是对接口赋值做了限制。
+
+**只有在没有指针receiver的时候，才可以将struct的值赋值给interface**
+
+**struct指针在任何情况下都可以赋值给interface**
+
+
+
+
+
 
 
