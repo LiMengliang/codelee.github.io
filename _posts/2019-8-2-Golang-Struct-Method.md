@@ -1,8 +1,7 @@
-| layout | title                            |
-| ------ | -------------------------------- |
-| post   | golang方法Receiver的自动类型转换 |
-
- 
+---
+layout: post
+title: golang方法Receiver的自动类型转换
+---
 
 ## 背景
 
@@ -140,7 +139,7 @@ type MyInterfaceImp1 struct {
 }
 
 func (m MyInterfaceImp1) Method1() {
-  fmt.Printf("Address %p", &m) 
+  fmt.Printf("Address %p", &m)
   ...
 }
 
@@ -166,10 +165,3 @@ myInterface = m2 // 赋值成功
 **只有在没有指针receiver的时候，才可以将struct的值赋值给interface**
 
 **struct指针在任何情况下都可以赋值给interface**
-
-
-
-
-
-
-
